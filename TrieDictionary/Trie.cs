@@ -27,25 +27,51 @@ public class Trie
         root = new TrieNode();
     }
 
-    public bool Insert(string word)
+    // Search for a word in the trie
+    public bool Search(string word)
     {
         TrieNode current = root;
         foreach (char c in word)
         {
             if (!current.HasChild(c))
             {
+                return false;
+            }
+            current = current.Children[c];
+        }
+        return current.IsEndOfWord;
+    }
+
+    public bool Insert(string word)
+    {
+        TrieNode current = root;
+        // For each character in the word
+        foreach (char c in word)
+        {
+            // If the current node does not have the child with the current character
+            if (!current.HasChild(c))
+            {
+                // Add the new child with the current character
                 current.Children[c] = new TrieNode(c);
             }
+            // Move to the child node with the current character
             current = current.Children[c];
         }
         if (current.IsEndOfWord)
         {
+            // Word already exists in the trie
             return false;
         }
+        // Mark the end of the word
         current.IsEndOfWord = true;
         return true;
     }
     
+    /// <summary>
+    /// Provides a list of all words in the trie that start with the given prefix.
+    /// </summary>
+    /// <param name="prefix">The prefix to search for in the trie.</param>
+    /// <returns>A list of words that start with the given prefix. If no words are found, an empty list is returned.</returns>
     public List<string> AutoSuggest(string prefix)
     {
         TrieNode currentNode = root;
@@ -60,9 +86,67 @@ public class Trie
         return GetAllWordsWithPrefix(currentNode, prefix);
     }
 
-    private List<string> GetAllWordsWithPrefix(TrieNode root, string prefix)
+    private List<string> GetAllWordsWithPrefix(TrieNode node, string prefix)
     {
-        return null;
+        List<string> words = new List<string>();
+
+        if (node.IsEndOfWord)
+        {
+            words.Add(prefix);
+        }
+
+        foreach (var child in node.Children)
+        {
+            words.AddRange(GetAllWordsWithPrefix(child.Value, prefix + child.Key));
+        }
+
+        return words;
+    }
+
+    // Helper method to delete a word from the trie by recursively removing its nodes
+    private bool _delete(TrieNode node, string word, int index)
+    {
+        // Base case: if the end of the word is reached
+        if (index == word.Length)
+        {
+            // If the current node is not the end of a word, return false
+            if (!node.IsEndOfWord)
+            {
+                return false;
+            }
+            // Unmark the end of the word
+            node.IsEndOfWord = false;
+            // If the current node has no children, return true to indicate it can be deleted
+            return node.Children.Count == 0;
+        }
+    
+        // Get the character at the current index
+        char c = word[index];
+        // If the current node does not have a child for the character, return false
+        if (!node.HasChild(c))
+        {
+            return false;
+        }
+    
+        // Recursively call DeleteWord on the child node
+        TrieNode child = node.Children[c];
+        bool shouldDeleteCurrentNode = _delete(child, word, index + 1);
+    
+        // If the child node should be deleted, remove it from the current node's children
+        if (shouldDeleteCurrentNode && !node.IsEndOfWord)
+        {
+            node.Children.Remove(c);
+            // Return true if the current node has no other children
+            return node.Children.Count == 0;
+        }
+    
+        // Return false if the current node should not be deleted
+        return false;
+    }
+
+    public bool Delete(string word)
+    {
+        return _delete(root, word, 0);
     }
 
     public List<string> GetAllWords()

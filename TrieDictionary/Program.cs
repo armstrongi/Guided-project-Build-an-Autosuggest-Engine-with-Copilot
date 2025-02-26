@@ -9,20 +9,24 @@ string[] words = {
         "the", "their", "they", "there", "towards"};
 
 Trie dictionary = InitializeTrie(words);
-// SearchWord();
-// PrefixAutocomplete();
-// DeleteWord();
+//SearchWord();
+//PrefixAutocomplete();
+//DeleteWord();
 // GetSpellingSuggestions();
 
 Trie InitializeTrie(string[] words)
 {
+    // Create a new instance of the Trie class
     Trie trie = new Trie();
 
+    // Iterate over each word in the input array
     foreach (string word in words)
     {
+        // Insert the current word into the Trie
         trie.Insert(word);
     }
 
+    // Return the initialized Trie containing all the words
     return trie;
 }
 
@@ -36,12 +40,11 @@ void SearchWord()
         {
             break;
         }
-        /*
+        
         if (input != null && dictionary.Search(input))
         {
             Console.WriteLine($"Found \"{input}\" in dictionary");
         }
-        */
         else
         {
             Console.WriteLine($"Did not find \"{input}\" in dictionary");
@@ -66,14 +69,13 @@ void DeleteWord()
         {
             break;
         }
-        /*
+        
         if (input != null && dictionary.Search(input))
         {
             dictionary.Delete(input);
             Console.WriteLine($"Deleted \"{input}\" from dictionary\n");
             PrintTrie(dictionary);
         }
-        */
         else
         {
             Console.WriteLine($"Did not find \"{input}\" in dictionary");
