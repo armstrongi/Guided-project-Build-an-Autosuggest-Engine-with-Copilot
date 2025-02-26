@@ -12,7 +12,7 @@ Trie dictionary = InitializeTrie(words);
 //SearchWord();
 //PrefixAutocomplete();
 //DeleteWord();
-// GetSpellingSuggestions();
+//GetSpellingSuggestions();
 
 Trie InitializeTrie(string[] words)
 {
@@ -200,9 +200,20 @@ void PrintTrie(Trie trie)
 {
     Console.WriteLine("The dictionary contains the following words:");
     List<string> words = trie.GetAllWords();
-    foreach (string word in words)
+    int columnCount = 5;
+    int wordCount = words.Count;
+    int wordsPerColumn = (int)Math.Ceiling((double)wordCount / columnCount);
+
+    for (int i = 0; i < wordsPerColumn; i++)
     {
-        Console.Write($"{word}, ");
+        for (int j = 0; j < columnCount; j++)
+        {
+            int index = i + j * wordsPerColumn;
+            if (index < wordCount)
+            {
+                Console.Write($"{words[index],-15}");
+            }
+        }
+        Console.WriteLine();
     }
-    Console.WriteLine();
 }
